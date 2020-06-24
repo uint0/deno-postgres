@@ -178,7 +178,7 @@ export const runtimeOids = new Set();
  * @param handle database client that can be used to fetch enum ids
  */
 export async function loadRuntimeOids(handle: Client) {
-  const result = await handle.query("SELECT DISTINCT typenumid FROM pg_enum");
+  const result = await handle.query("SELECT DISTINCT enumtypid FROM pg_enum");
   // TODO: error check
-  result.rows.forEach(oid => runtimeOids.add(oid));
+  result.rows.forEach(oid => runtimeOids.add(+oid[0]));
 }
