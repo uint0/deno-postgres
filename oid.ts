@@ -1,4 +1,4 @@
-import { Client } from "./client.ts"
+import { Client, PoolClient } from "./client.ts";
 
 export const Oid = {
   bool: 16,
@@ -177,7 +177,7 @@ export const runtimeOids = new Set();
  * Loads user defined oids at runtime
  * @param handle database client that can be used to fetch enum ids
  */
-export async function loadRuntimeOids(handle: Client) {
+export async function loadRuntimeOids(handle: Client | PoolClient) {
   const result = await handle.query("SELECT DISTINCT enumtypid FROM pg_enum");
   // TODO: error check
   result.rows.forEach(oid => runtimeOids.add(+oid[0]));
