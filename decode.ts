@@ -1,4 +1,4 @@
-import { Oid } from "./oid.ts";
+import { Oid, runtimeOids } from "./oid.ts";
 import { Column, Format } from "./connection.ts";
 
 // Datetime parsing based on:
@@ -177,6 +177,15 @@ function decodeByteaEscape(byteaStr: string): Uint8Array {
 
 const decoder = new TextDecoder();
 
+function handleDynamicOid(oid: number, strValue: string): any {
+  // TODO: handle this properly
+  if(runtimeOids.has(oid)) {
+    return strValue;
+  } else {
+    throw new Error(`Don't know how to parse column type: ${oid}`);
+  }
+}
+
 // deno-lint-ignore no-explicit-any
 function decodeText(value: Uint8Array, typeOid: number): any {
   const strValue = decoder.decode(value);
@@ -231,7 +240,7 @@ function decodeText(value: Uint8Array, typeOid: number): any {
     case Oid.bytea:
       return decodeBytea(strValue);
     default:
-      throw new Error(`Don't know how to parse column type: ${typeOid}`);
+      return handleDynamicOid(typeOid, strValue);
   }
 }
 
